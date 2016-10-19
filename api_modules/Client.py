@@ -1,5 +1,6 @@
 from flask_restful import Resource
 from . import DataBaseManager, data
+from flask import request
 
 parser = data.parser
 
@@ -8,23 +9,60 @@ class Client(Resource):
     states = ['Prospect', 'Projet en cours', 'Projet terminé', 'Partenaire']
 
     @staticmethod
-    def get():
+    def get(fullname):
+
         connection = DataBaseManager.DataBaseManager.connect()
-        parser.add_argument('type', type=str, required=True)
-        parser.add_argument('value', type=str, required=True)
-        args = parser.parse_args()
-        if args['type'] not in ['firstname', 'lastname', 'height', 'town']:
-            return {'error': "Type " + args['type'] + " not found"}
         try:
             with connection.cursor() as cursor:
-                # Read a single record
-                sql = "SELECT * FROM `user` WHERE `" + args['type'] + "`=%s"
-                cursor.execute(sql, (args['value']))
+                fullname = fullname.split(" ")
+                query = "SELECT * FROM `user`  WHERE `firstname` = %s AND `lastname` = %s"
+                cursor.execute(query, (fullname[0], fullname[1]))
                 result = cursor.fetchone()
         finally:
             connection.close()
 
         return {'result': result}
+
+    @staticmethod
+    def delete(fullname):
+        connection = DataBaseManager.DataBaseManager.connect()
+        try:
+            with connection.cursor() as cursor:
+
+                fullname = fullname.split(" ")
+                query = "DELETE FROM `user` WHERE `firstname` = %s AND `lastname` = %s"
+                cursor.execute(query, (fullname[0], fullname[1]))
+
+            # connection is not autocommit by default. So you must commit to save your changes.
+            connection.commit()
+        finally:
+            connection.close()
+
+        return {'result': "User deleted"}
+
+    @staticmethod
+    def put(fullname):
+        connection = DataBaseManager.DataBaseManager.connect()
+        parser.add_argument('index', type=str, required=True)
+        parser.add_argument('value', type=str, required=True)
+        args = parser.parse_args()
+        try:
+            with connection.cursor() as cursor:
+
+                fullname = fullname.split(" ")
+                query = "UPDATE `user` SET `" + args['index'] + "` = %s WHERE `firstname` = %s AND `lastname` = %s"
+                cursor.execute(query, (args['value'], fullname[0], fullname[1]))
+
+            # connection is not autocommit by default. So you must commit to save your changes.
+            connection.commit()
+        finally:
+            connection.close()
+
+        return {'result': "User updated"}
+
+
+class ClientPost(Resource):
+    fields = ['fullname', 'lastname', 'firstname', 'enterprise', 'state']
 
     @staticmethod
     def post():
@@ -33,7 +71,6 @@ class Client(Resource):
         parser.add_argument('enterprise', type=str, required=True)
         parser.add_argument('state', type=str, required=True)
         args = parser.parse_args()
-        print(args)
         try:
             with connection.cursor() as cursor:
 
@@ -41,8 +78,8 @@ class Client(Resource):
                     return {'result': 'User state not valid'}
 
                 fullname = args['fullname'].split(" ")
-                request = "INSERT INTO `user` (`firstname`, `lastname`, `enterprise`, `state`) VALUES (%s, %s, %s, %s)"
-                cursor.execute(request, (fullname[0], fullname[1], args['enterprise'], args["state"]))
+                query = "INSERT INTO `user` (`firstname`, `lastname`, `enterprise`, `state`) VALUES (%s, %s, %s, %s)"
+                cursor.execute(query, (fullname[0], fullname[1], args['enterprise'], args["state"]))
 
             # connection is not autocommit by default. So you must commit to save your changes.
             connection.commit()
@@ -50,3 +87,14 @@ class Client(Resource):
             connection.close()
 
         return {'result': "User added"}
+
+    @staticmethod
+    def get():
+        connection = DataBaseManager.DataBaseManager.connect()
+        params = request.args.to_dict()
+        print(params)
+        for (key, value) in params.items():
+            if key not in ClientPost.fields:
+                return {'error': "invalid field"}
+
+        return {'params': params}
