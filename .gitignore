@@ -91,5 +91,5 @@ ENV/
 #PyCharm
 .idea
 /api_modules/parameters.py
-/spreadsheet_api/client_secret.json
+/spreadsheet_modules/client_secret.json
 /spreadsheet_modules/secret.json
