@@ -1,16 +1,55 @@
 <html>
 	<body>
 		<form method="post">
-			<input type="text" placeholder="Contact" name="contact"><br>
-			<select id="statut">
+			<select id="choice" name="index">
+				<option value="state">State</option>
+				<option value="new_name">New name</option>
+				<option value="new_enterprise">New enterprise</option>
+			</select>
+			<input type="text" id="value" name="value">
+			<br>
+			<select id="statut" name="value">
 				<option value="prospect">Prospect</option>
 				<option value="progress">Projet en cours</option>
 				<option value="termine">Projet terminé</option>
 				<option value="partenaire">Projet partenaire</option>
 			</select>
-			<input type="text" placeholder="new_name" name="new_contact"><br>
-			<input type="text" placeholder="new_entreprise" name="entreprise">
-			<input type="submit" value="Update">
+			<br>
+
+
+			<input type="submit">
 		</form>
+	<script
+  src="https://code.jquery.com/jquery-3.1.1.js"
+  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+  crossorigin="anonymous"></script>
+
 	</body>
 </html>
+
+
+<script type="text/javascript">
+	$(document).ready(function()
+	{
+	var selectMenu= document.getElementById('choice');
+	$("#value").hide();
+
+
+	selectMenu.onchange	 = function () {
+		var selected = selectMenu.options[selectMenu.selectedIndex].text;
+		if (selected == "State" ){
+			$("#statut").show();
+			$("#value").hide();
+
+		}else{
+			$("#statut").hide();
+			$("#value").show();
+		}
+
+
+
+	}
+	});
+
+
+</script>
