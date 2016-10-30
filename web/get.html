@@ -1,0 +1,23 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<fieldset>
+			<legend>Valeurs possibles pour "statut"</legend>
+			<ul>
+				<li>prospect</li>
+				<li>progress</li>
+				<li>termine</li>
+				<li>partenaire</li>
+			</ul>
+		</fieldset>
+		<form method="post" action="get.php">
+			<input type="text" placeholder="Votre recherche" name="crit_value" id="crit_value"><br>
+			<input type="submit" value="Search">
+		</form>
+		<div id="res"></div>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+		<script src="../get_simple.js"></script>
+	</body>
+</html>
