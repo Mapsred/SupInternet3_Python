@@ -69,17 +69,12 @@ class ClientPost(Resource):
         connection = DataBaseManager.DataBaseManager.connect()
         parser.add_argument('fullname', type=str, required=True)
         parser.add_argument('enterprise', type=str, required=True)
-        parser.add_argument('state', type=str, required=True)
         args = parser.parse_args()
         try:
             with connection.cursor() as cursor:
-
-                if args['state'] not in Client.states:
-                    return {'result': 'User state not valid'}
-
                 fullname = args['fullname'].split(" ")
                 query = "INSERT INTO `user` (`firstname`, `lastname`, `enterprise`, `state`) VALUES (%s, %s, %s, %s)"
-                cursor.execute(query, (fullname[0], fullname[1], args['enterprise'], args["state"]))
+                cursor.execute(query, (fullname[0], fullname[1], args['enterprise'], "Prospect"))
 
             # connection is not autocommit by default. So you must commit to save your changes.
             connection.commit()
@@ -92,9 +87,35 @@ class ClientPost(Resource):
     def get():
         connection = DataBaseManager.DataBaseManager.connect()
         params = request.args.to_dict()
-        print(params)
+        arguments = []
         for (key, value) in params.items():
             if key not in ClientPost.fields:
                 return {'error': "invalid field"}
+            else:
+                if key == "fullname":
+                    arguments.append("firstname")
+                    arguments.append("lastname")
+                else:
+                    arguments.append(key)
 
-        return {'params': params}
+        try:
+            with connection.cursor() as cursor:
+                if "fullname" in params.items():
+                    fullname = params['fullname'].split(" ")
+                    params['firstname'] = fullname[0]
+                    params['lastname'] = fullname[1]
+                    del params['fullname']
+
+                query = "SELECT * FROM `user` WHERE"
+                queries = []
+                for (key, value) in params.items():
+                    queries.append(str("`{}` = %s".format(key)))
+
+                query += " AND ".join(queries)
+                args = [params[i] for i in arguments]
+                cursor.execute(query, args)
+                result = cursor.fetchall()
+        finally:
+            connection.close()
+
+        return {'result': result}
