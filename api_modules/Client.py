@@ -14,9 +14,10 @@ class Client(Resource):
         connection = DataBaseManager.DataBaseManager.connect()
         try:
             with connection.cursor() as cursor:
-                fullname = fullname.split(" ")
-                query = "SELECT * FROM `user`  WHERE `firstname` = %s AND `lastname` = %s"
-                cursor.execute(query, (fullname[0], fullname[1]))
+                name = fullname.split(" ")
+                query = "SELECT * FROM `user` WHERE `firstname` = %s AND `lastname` = %s " \
+                        "OR `enterprise` = %s OR `state` = %s"
+                cursor.execute(query, (name[0], name[1], fullname, fullname))
                 result = cursor.fetchone()
         finally:
             connection.close()
