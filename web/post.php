@@ -5,17 +5,30 @@
  * Date: 30/10/16
  * Time: 20:34
  */
-if (isset($_POST['crit_value'])) {
-    $url = "127.0.0.1:5000/user/".$_POST['crit_value'];
+
+if (isset($_POST['fullname'])) {
+    $url = "127.0.0.1:5000/user";
+    $fields_string = "";
+    $fields = [
+        'fullname' => urlencode($_POST['fullname']),
+        'enterprise' => urlencode($_POST['enterprise']),
+    ];
+
+    foreach ($fields as $key => $value) {
+        $fields_string .= $key.'='.$value.'&';
+    }
+
+    rtrim($fields_string, '&');
+
     $url = str_replace(' ', '%20', $url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, count($fields));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $data = curl_exec($ch);
     curl_close($ch);
     $parsed_json = json_decode($data);
-    $fullname = $parsed_json->result->firstname." ".$parsed_json->result->lastname;
-
     ?>
 
     <!doctype html>
@@ -25,13 +38,10 @@ if (isset($_POST['crit_value'])) {
         <meta name="viewport"
               content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>API GET Result</title>
+        <title>API POST Result</title>
     </head>
     <body>
-    id: <?= $parsed_json->result->id ?> <br>
-    nom entier: <?= $fullname ?> <br>
-    entreprise: <?= $parsed_json->result->enterprise ?> <br>
-    statut: <?= $parsed_json->result->state ?>
+    <?= $parsed_json->result ?>
     </body>
     </html>
 
