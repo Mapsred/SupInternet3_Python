@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST['crit_value'])) {
-    $url = "127.0.0.1:5000/user/".$_POST['get_value'];
+    $url = "127.0.0.1:5000/user/".$_POST['crit_value'];
     $url = str_replace(' ', '%20', $url);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -9,7 +9,9 @@ if (isset($_POST['crit_value'])) {
     curl_close($ch);
     $parsed_json = json_decode($data);
 
-    var_dump($parsed_json);
+
+    $fullname=$parsed_json->result->firstname . " ".$parsed_json->result->lastname;
+
     ?>
 
     <!doctype html>
@@ -22,6 +24,10 @@ if (isset($_POST['crit_value'])) {
         <title>API GET Result</title>
     </head>
     <body>
+        id: <?= $parsed_json->result->id ?> <br>
+        nom entier: <?= $fullname ?> <br>
+        entreprise: <?= $parsed_json->result->enterprise ?> <br>
+        statut: <?= $parsed_json->result->state ?>
     </body>
     </html>
 
