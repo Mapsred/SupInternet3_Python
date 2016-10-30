@@ -49,10 +49,15 @@ class Client(Resource):
         args = parser.parse_args()
         try:
             with connection.cursor() as cursor:
-
                 fullname = fullname.split(" ")
-                query = "UPDATE `user` SET `" + args['index'] + "` = %s WHERE `firstname` = %s AND `lastname` = %s"
-                cursor.execute(query, (args['value'], fullname[0], fullname[1]))
+                if args['index'] == "fullname":
+                    name = args['value'].split(" ")
+                    query = "UPDATE `user` SET `firstname` = %s, `lastname` = %s " \
+                            "WHERE `firstname` = %s AND `lastname` = %s"
+                    cursor.execute(query, (name[0], name[1], fullname[0], fullname[1]))
+                else:
+                    query = "UPDATE `user` SET `" + args['index'] + "` = %s WHERE `firstname` = %s AND `lastname` = %s"
+                    cursor.execute(query, (args['value'], fullname[0], fullname[1]))
 
             # connection is not autocommit by default. So you must commit to save your changes.
             connection.commit()

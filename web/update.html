@@ -1,55 +1,45 @@
 <html>
-	<body>
-		<form method="post">
-			<select id="choice" name="index">
-				<option value="state">State</option>
-				<option value="new_name">New name</option>
-				<option value="new_enterprise">New enterprise</option>
-			</select>
-			<input type="text" id="value" name="value">
-			<br>
-			<select id="statut" name="value">
-				<option value="prospect">Prospect</option>
-				<option value="progress">Projet en cours</option>
-				<option value="termine">Projet terminé</option>
-				<option value="partenaire">Projet partenaire</option>
-			</select>
-			<br>
+<body>
+<form method="post" action="update.php">
+    <input type="text" id="fullname" name="fullname" title="">
+    <select id="choice" name="index" title="">
+        <option value="state">State</option>
+        <option value="fullname">New name</option>
+        <option value="enterprise">New enterprise</option>
+    </select>
+    <input type="text" id="value" name="value" title="">
+    <br>
+    <select id="statut" name="state" title="">
+        <option value="prospect">Prospect</option>
+        <option value="progress">Projet en cours</option>
+        <option value="termine">Projet terminé</option>
+        <option value="partenaire">Projet partenaire</option>
+    </select>
+    <br>
+    <input type="submit" value="Envoyer">
+</form>
+<script src="https://code.jquery.com/jquery-3.1.1.js"></script>
 
-
-			<input type="submit">
-		</form>
-	<script
-  src="https://code.jquery.com/jquery-3.1.1.js"
-  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
-  crossorigin="anonymous"></script>
-
-	</body>
+</body>
 </html>
 
 
 <script type="text/javascript">
-	$(document).ready(function()
-	{
-	var selectMenu= document.getElementById('choice');
-	$("#value").hide();
+    $(document).ready(function () {
+        var selectMenu = document.getElementById('choice');
+        $("#value").hide();
 
+        selectMenu.onchange = function () {
+            var selected = selectMenu.options[selectMenu.selectedIndex].text;
+            if (selected == "State") {
+                $("#statut").show();
+                $("#value").hide();
+                $("#value").val("");
 
-	selectMenu.onchange	 = function () {
-		var selected = selectMenu.options[selectMenu.selectedIndex].text;
-		if (selected == "State" ){
-			$("#statut").show();
-			$("#value").hide();
-
-		}else{
-			$("#statut").hide();
-			$("#value").show();
-		}
-
-
-
-	}
-	});
-
-
+            } else {
+                $("#statut").hide();
+                $("#value").show();
+            }
+        }
+    });
 </script>
